@@ -13,18 +13,34 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+from django.conf import settings
+from django.conf.urls.static import static
+from django.contrib import admin
 from django.urls import path
-
+from accounts.views import MySignupView, MyLoginView, LogoutView
 from vacancies import views
 
 urlpatterns = [
+    path('admin/', admin.site.urls),
     path('', views.MainView.as_view(), name='main'),
     path('vacancies', views.ListVacanciesView.as_view(), name='list_vacancies'),
     path('vacancies/cat/<str:specialty>', views.ListSpecialtyView.as_view(), name='specialty_list'),
     path('companies/<int:company_id>', views.ListCompanyView.as_view(), name='company_list'),
     path('vacancies/<int:pk>', views.VacancyView.as_view(), name='vacancy'),
+    path('vacancies/<int:pk>/send', views.SentVacancyView.as_view(), name='sent_application'),
+
+    path('login', MyLoginView.as_view(), name='login_page'),
+    path('logout', LogoutView.as_view(), name='logout_page'),
+    path('register', MySignupView.as_view(), name='register_page'),
+
+    path('mycompany/letsstart', views.MyCompanyLetStart.as_view(), name='lets_start'),
+    path('mycompany' , views.MyCompany.as_view(), name='mycompany' ),
 
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
 
 handler404 = views.custom_handler404
 handler500 = views.custom_handler500

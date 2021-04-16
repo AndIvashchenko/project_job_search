@@ -1,6 +1,7 @@
  <!DOCTYPE html>
 <html lang="ru">
 
+{% block head %}
 <head>
   <meta charset="UTF-8">
   {% block title %}
@@ -8,7 +9,9 @@
   {% endblock %}
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
 </head>
+{% endblock %}
 
 <body>
   <header class="container mt-3">
@@ -24,10 +27,18 @@
           </li>
 
         </ul>
-        <ul class="navbar-nav col-2 justify-content-end">
+        <div class="navbar-nav col-2 justify-content-end">
           <li class="nav-item active">
-            <a href="#" class="nav-link font-weight-bold">Вход</a>
-          </li>
+            {% if user.is_authenticated%}
+              <div class="dropdown">
+               <button class="btn btn-light dropdown-toggle font-weight-bold" data-toggle="dropdown">{{ user.username }}<span class="caret"></span></button>
+                <ul class="dropdown-menu">
+                  <li><a class="text-dark" href="{% url 'logout_page' %}">Выход</a></li>
+                </ul>
+              </div>
+            {% else %}
+              <a href="{% url 'login_page' %}" class="nav-link font-weight-bold">Вход</a>
+            {% endif %}
         </ul>
       </div>
     </nav>

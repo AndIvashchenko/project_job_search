@@ -8,8 +8,9 @@
     </div>
     <section>
       <div class="text-center">
-        {% load static %}
-        <img src="{% static company.logo %}" width="130" height="80" alt="Company logo">
+        {% if company.logo  %}
+        <img src="{{ company.logo.url }}" width="130" height="80" alt="Company logo">
+        {% endif %}
       </div>
       <h1 class="h1 text-center mx-auto mt-0 pt-1" style="font-size: 70px;"><strong>{{ company.title }}</strong></h1>
       <p class="text-center pt-1">Компания, {{ company.location }}, {{ vacancies.count }} вакансий</p>
@@ -28,8 +29,9 @@
                   <p class="text-muted pt-1">{{ vacancy.published_at }}</p>
                 </div>
                 <div class="col-12 col-md-4 col-lg-3 d-flex align-items-end">
-                  {% load static %}
-                  <img src="{% static vacancy.company.logo %}" width="130" height="80" alt="">
+                  {% if vacancy.company.logo %}
+                    <img src="{{ vacancy.company.logo.url }}" width="130" height="80" alt="">
+                  {% endif %}
                 </div>
               </div>
             </div>
