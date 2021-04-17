@@ -25,21 +25,22 @@
           <li class="nav-item">
             <a class="nav-link" href="{% url 'list_vacancies'  %}">Вакансии</a>
           </li>
-
         </ul>
-        <div class="navbar-nav col-2 justify-content-end">
+        <ul class="navbar-nav col-2 justify-content-end">
           <li class="nav-item active">
             {% if user.is_authenticated%}
               <div class="dropdown">
                <button class="btn btn-light dropdown-toggle font-weight-bold" data-toggle="dropdown">{{ user.username }}<span class="caret"></span></button>
                 <ul class="dropdown-menu">
-                  <li><a class="text-dark" href="{% url 'logout_page' %}">Выход</a></li>
+                  <li><a class="dropdown-item py-2" href="{% url 'mycompany' %}">Компания</a></li>
+                  <li><a class="dropdown-item py-2" href="{% url 'logout_page' %}">Выход</a></li>
                 </ul>
               </div>
             {% else %}
               <a href="{% url 'login_page' %}" class="nav-link font-weight-bold">Вход</a>
             {% endif %}
-        </ul>
+          </li>
+         </ul>
       </div>
     </nav>
   </header>

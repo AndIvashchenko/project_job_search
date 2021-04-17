@@ -79,3 +79,9 @@ class Application(models.Model):
     vacancy = models.ForeignKey("Vacancy", verbose_name="Вакансия", on_delete=models.CASCADE, related_name="applications")
     user = models.ForeignKey(User, verbose_name="Пользователь", on_delete=models.CASCADE, related_name="applications")
 
+    class Meta:
+        verbose_name = "Отклик"
+        verbose_name_plural = "Отклики"
+
+    def __str__(self):
+        return f'Отклик от {self.written_username}'

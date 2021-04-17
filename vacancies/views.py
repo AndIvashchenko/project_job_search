@@ -1,11 +1,14 @@
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponseNotFound, HttpResponseServerError
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
+from django.utils.decorators import method_decorator
 from django.views import View
 from django.views.generic import TemplateView, ListView, DetailView
 
-from .models import Company, Vacancy, Specialty
+from .models import Company, Vacancy, Specialty, User
 from .forms import ApplicationForm, CompanyForm
 
 
@@ -56,6 +59,7 @@ class ListCompanyView(ListView):
         return context
 
 
+
 class VacancyView(DetailView):
     model = Vacancy
     template_name = 'vacancies/vacancy.html'
@@ -66,11 +70,12 @@ class VacancyView(DetailView):
         context['form'] = ApplicationForm
         return context
 
+    @method_decorator(login_required)
     def post(self, request, pk):
         form = ApplicationForm(request.POST)
         if form.is_valid():
             application = form.save(commit=False)
-            application.user.id = request.user.pk
+            application.user_id = request.user.pk
             application.vacancy_id = pk
             application.save()
             return redirect(reverse('sent_application', kwargs={'pk': pk}))
@@ -96,22 +101,44 @@ class MyCompanyLetStart(LoginRequiredMixin, TemplateView):
 class MyCompanyCreate(LoginRequiredMixin, View):
 
     def dispatch(self, request, *args, **kwargs):
-        if Company.objects.filter(owner__pk=request.user.pk):
+        if Company.objects.filter(owner__pk=request.user.pk).first():
             return redirect(reverse('mycompany'))
-        return super.dispatch(request, *args, **kwargs)
+        return super().dispatch(request, *args, **kwargs)
 
     def get(self, request):
-        form = CompanyForm
+        form = CompanyForm()
         return render(request, 'vacancies/company-edit.html', {"form": form})
 
     def post(self, request):
-        company = Company.objects.filter(owner__pk=request.user.pk).first()
-        form = CompanyForm(request, request.user)
+        form = CompanyForm(request.POST, request.FILES, request.user)
         if form.is_valid():
             company = form.save(commit=False)
             company.owner = get_object_or_404(User, pk=request.user.pk)
             company.save()
-            return redirect(reverse('mycompany_edit'))
+            messages.success(request, 'Компания создана')
+            return redirect(reverse('mycompany'))
+        else:
+            return render(request, 'vacancies/company-edit.html', {"form": form})
+
+
+class MyCompanyEdit(LoginRequiredMixin, View):
+
+    def get(self, request):
+        company = Company.objects.filter(owner__pk=request.user.pk).first()
+        if not company:
+            return redirect(reverse('lets_start'))
+        form = CompanyForm(instance=company)
+        return render(request, 'vacancies/company-edit.html', {"form": form})
+
+    def post(self, request):
+        company = Company.objects.filter(owner__pk=request.user.pk).first()
+        form = CompanyForm(request.POST, request.FILES, request.user, instance=company)
+        if form.is_valid():
+            company = form.save(commit=False)
+            company.owner = get_object_or_404(User, pk=request.user.pk)
+            company.save()
+            messages.success(request, 'Информация о компании обновлена')
+            return redirect(reverse('mycompany'))
         else:
             return render(request, 'vacancies/company-edit.html', {"form": form})
 

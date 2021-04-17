@@ -34,7 +34,9 @@ urlpatterns = [
     path('register', MySignupView.as_view(), name='register_page'),
 
     path('mycompany/letsstart', views.MyCompanyLetStart.as_view(), name='lets_start'),
-    path('mycompany' , views.MyCompany.as_view(), name='mycompany' ),
+    path('mycompany/create', views.MyCompanyCreate.as_view(), name='mycompany_create'),
+    path('mycompany', views.MyCompanyEdit.as_view(), name='mycompany'),
+
 
 ]
 
